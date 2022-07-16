@@ -26,6 +26,16 @@ app.get('/messages', (request, response)=>{
   })
 })
 
+app.get('/messages/:user', (request, response) => {
+  var user = request.params.user;
+  console.log('Fetching user', user)
+  MessageModel.find({name: user}, (error, message)=>{
+    
+    console.log('Error:', error)
+    response.send(message);
+  })
+})
+
 app.post('/messages', async (request, response)=>{
 
   try {
