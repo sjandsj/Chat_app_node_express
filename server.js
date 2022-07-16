@@ -26,27 +26,30 @@ app.get('/messages', (request, response)=>{
   })
 })
 
-app.post('/messages', (request, response)=>{
+app.post('/messages', async (request, response)=>{
   var messageModel = new MessageModel(request.body)
-  messageModel.save().then(()=>{
+  var savedMessage = await messageModel.save();
+ 
     console.log('Saved to MonogoDb')
-    return MessageModel.findOne({message: 'fuck'})
-  })
-  .then(censored=>{
+    var censored = await MessageModel.findOne({message: 'fuck'})
+ 
+  
     if(censored){
       console.log('Censored word :', censored);
-      return MessageModel.remove({_id: censored.id})
+      await MessageModel.remove({_id: censored.id})
+    } else{
+      io.emit('message', request.body)
     }
 
     console.log('post request body', request.body)
     //messages.push(request.body)
-    io.emit('message', request.body)
+    
     response.sendStatus(200)
-  })
-  .catch(error=>{
-    response.sendStatus(500)
-    return console.log('Error:', error)
-  })
+ 
+  // .catch(error=>{
+  //   response.sendStatus(500)
+  //   return console.log('Error:', error)
+  // })
 })
 
 
