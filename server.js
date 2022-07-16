@@ -29,7 +29,7 @@ app.get('/messages', (request, response)=>{
 app.post('/messages', async (request, response)=>{
 
   try {
-    throw 'Static Error'
+    //throw 'Static Error'
     var messageModel = new MessageModel(request.body)
     var savedMessage = await messageModel.save();
  
@@ -51,11 +51,9 @@ app.post('/messages', async (request, response)=>{
   } catch (error) {
     response.sendStatus(500)
     return console.log('Error:', error)
+  } finally{
+    console.log('Finally running')
   }
-
-  
- 
-
 })
 
 
