@@ -27,8 +27,11 @@ app.get('/messages', (request, response)=>{
 })
 
 app.post('/messages', async (request, response)=>{
-  var messageModel = new MessageModel(request.body)
-  var savedMessage = await messageModel.save();
+
+  try {
+    throw 'Static Error'
+    var messageModel = new MessageModel(request.body)
+    var savedMessage = await messageModel.save();
  
     console.log('Saved to MonogoDb')
     var censored = await MessageModel.findOne({message: 'fuck'})
@@ -45,11 +48,14 @@ app.post('/messages', async (request, response)=>{
     //messages.push(request.body)
     
     response.sendStatus(200)
+  } catch (error) {
+    response.sendStatus(500)
+    return console.log('Error:', error)
+  }
+
+  
  
-  // .catch(error=>{
-  //   response.sendStatus(500)
-  //   return console.log('Error:', error)
-  // })
+
 })
 
 
