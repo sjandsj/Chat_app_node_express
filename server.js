@@ -10,6 +10,7 @@ app.use(express.static(__dirname))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({extended: false}))
 
+//mongoose.Promise = Promise;
 var dbUrl = 'mongodb+srv://shubhanshu:shubhanshu@shubhanshu-1.051ni.mongodb.net/?retryWrites=true&w=majority'
 
 var MessageModel = mongoose.model('MessageModel', {
@@ -27,33 +28,33 @@ app.get('/messages', (request, response)=>{
 
 app.post('/messages', (request, response)=>{
   var messageModel = new MessageModel(request.body)
-  messageModel.save(error=>{
-    if(error){
-      response.sendStatus(500);
-    } else {
-
-      // Nested callbacks
-      MessageModel.findOne({
-        message: 'fuck',
-      },(error, censored)=>{
-        if(censored){
-          console.log('Censored word :', censored);
-          MessageModel.remove({_id: censored.id}, error=>{
-            console.log('Removed censored message')
-          })
-        }
-      })
-
-
-
-
-      console.log('post request body', request.body)
-      //messages.push(request.body)
-      io.emit('message', request.body)
-      response.sendStatus(200)
+  messageModel.save().then(()=>{
+    console.log('Saved to MonogoDb')
+    return MessageModel.findOne({message: 'fuck'})
+  })
+  .then(censored=>{
+    if(censored){
+      console.log('Censored word :', censored);
+      return MessageModel.remove({_id: censored.id})
     }
+
+    console.log('post request body', request.body)
+    //messages.push(request.body)
+    io.emit('message', request.body)
+    response.sendStatus(200)
+  })
+  .catch(error=>{
+    response.sendStatus(500)
+    return console.log('Error:', error)
   })
 })
+
+
+
+
+
+
+
 
 io.on('connection', (socket)=>{
   console.log('User connected to socket')
