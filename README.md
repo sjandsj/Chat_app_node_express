@@ -1,6 +1,9 @@
 # Chat_app_node_express
 This is a Demo app for Learning node.js
 
+The app can do real-time chat on localhost:3000 with multiple users
+
+
 Node.js is used as a backend in this project
 Mongo Db as a Non-Sql data base
 
